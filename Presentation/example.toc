@@ -1,0 +1,6 @@
+\babel@toc {english}{}\relax 
+\beamer@sectionintoc {1}{Basics}{3}{0}{1}
+\beamer@subsectionintoc {1}{1}{Boxes}{4}{0}{1}
+\beamer@subsectionintoc {1}{2}{Colors and Fonts}{7}{0}{1}
+\beamer@sectionintoc {2}{Citations}{9}{0}{2}
+\beamer@sectionintoc {4}{Notes Style}{11}{0}{3}

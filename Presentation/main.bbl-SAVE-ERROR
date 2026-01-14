@@ -1,0 +1,431 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{apa/apasortcite//global/global/global}
+    \entry{BrainDamage}{inbook}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=6a1aa6b7eab12b931ca7c7e3f927231d}{%
+           family={LeCun},
+           familyi={L\bibinitperiod},
+           given={Yann},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=2e06fda0238979cad0d24113daf80ed5}{%
+           family={Denker},
+           familyi={D\bibinitperiod},
+           given={John},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=920b205f35e78671ab4d18f203e692f9}{%
+           family={Solla},
+           familyi={S\bibinitperiod},
+           given={Sara},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \name{editor}{1}{}{%
+        {{hash=8c406d39fa15d10e06383cfeff56d22c}{%
+           family={Touretzky},
+           familyi={T\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Morgan-Kaufmann}%
+      }
+      \strng{namehash}{9e4c6012409dc8dd9b2aa198a2059804}
+      \strng{fullhash}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{fullhashraw}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{bibnamehash}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{authorbibnamehash}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{authornamehash}{9e4c6012409dc8dd9b2aa198a2059804}
+      \strng{authorfullhash}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{authorfullhashraw}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{editorbibnamehash}{8c406d39fa15d10e06383cfeff56d22c}
+      \strng{editornamehash}{8c406d39fa15d10e06383cfeff56d22c}
+      \strng{editorfullhash}{8c406d39fa15d10e06383cfeff56d22c}
+      \strng{editorfullhashraw}{8c406d39fa15d10e06383cfeff56d22c}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Advances in Neural Information Processing Systems}
+      \field{title}{Optimal Brain Damage}
+      \field{volume}{2}
+      \field{year}{1989}
+    \endentry
+    \entry{ERMPA}{article}{}{}
+      \name{author}{6}{}{%
+        {{un=0,uniquepart=base,hash=bdb99e92a5bd0e26f41989c51d94c0e9}{%
+           family={Sun},
+           familyi={S\bibinitperiod},
+           given={Jingwei},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=67f3a673d1b5d096250c6b53c122ceb4}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Ang},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c2c8a8dd060d2e3d54e27ddeffddcf53}{%
+           family={DiValentin},
+           familyi={D\bibinitperiod},
+           given={Louis},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=dbf336c148fbe8eb620e4e11ea8611d1}{%
+           family={Hassanzadeh},
+           familyi={H\bibinitperiod},
+           given={Amin},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a598ab57c52f6e9189cda29ff5b955b7}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Yiran},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c7b2bb54b5e6ecaac22872ce5fa3f783}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Hai},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Curran Associates, Inc.}%
+      }
+      \strng{namehash}{bcc2aef533831e2e58f3601d32995204}
+      \strng{fullhash}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \strng{fullhashraw}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \strng{bibnamehash}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \strng{authorbibnamehash}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \strng{authornamehash}{bcc2aef533831e2e58f3601d32995204}
+      \strng{authorfullhash}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \strng{authorfullhashraw}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Advances in Neural Information Processing Systems}
+      \field{title}{FL-WBC: Enhancing Robustness against Model Poisoning Attacks in Federated Learning from a Client Perspective}
+      \field{volume}{34}
+      \field{year}{2021}
+      \field{pages}{12613\bibrangedash 12624}
+      \range{pages}{12}
+    \endentry
+    \entry{LeadFL}{inbook}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=681293f4f37cc140fa24230fe551b306}{%
+           family={Zhu},
+           familyi={Z\bibinitperiod},
+           given={Chaoyi},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=d33b552c14a169cffed342438407ebd5}{%
+           family={Roos},
+           familyi={R\bibinitperiod},
+           given={Stefanie},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=741fe3fe5c673eea80fa21a12adce422}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Lydia\bibnamedelima Y.},
+           giveni={L\bibinitperiod\bibinitdelim Y\bibinitperiod},
+           givenun=0}}%
+      }
+      \name{editor}{6}{}{%
+        {{hash=112eb0b147c4a7f674d015a86e5dea70}{%
+           family={Krause},
+           familyi={K\bibinitperiod},
+           given={Andreas},
+           giveni={A\bibinitperiod}}}%
+        {{hash=d94fdf38ad71e8210b4505c8fbb7fa87}{%
+           family={Brunskill},
+           familyi={B\bibinitperiod},
+           given={Emma},
+           giveni={E\bibinitperiod}}}%
+        {{hash=3da7501a79d9346572c7fd6e41b615df}{%
+           family={Cho},
+           familyi={C\bibinitperiod},
+           given={Kyunghyun},
+           giveni={K\bibinitperiod}}}%
+        {{hash=ca6c8866884502e2e8d407df0fce29d3}{%
+           family={Engelhardt},
+           familyi={E\bibinitperiod},
+           given={Barbara},
+           giveni={B\bibinitperiod}}}%
+        {{hash=0dafa6bad2e178837ff918538e24226a}{%
+           family={Sabato},
+           familyi={S\bibinitperiod},
+           given={Sivan},
+           giveni={S\bibinitperiod}}}%
+        {{hash=8bff09c02d42ded468c8b33a7e2738c7}{%
+           family={Scarlett},
+           familyi={S\bibinitperiod},
+           given={Jonathan},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {PMLR}%
+      }
+      \strng{namehash}{d880c6a28961187f935700e194b2e37a}
+      \strng{fullhash}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{fullhashraw}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{bibnamehash}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{authorbibnamehash}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{authornamehash}{d880c6a28961187f935700e194b2e37a}
+      \strng{authorfullhash}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{authorfullhashraw}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{editorbibnamehash}{5775b0ea111287e7ae6740b390430eb1}
+      \strng{editornamehash}{134fce1f5ad57ab5067b59de0a64293f}
+      \strng{editorfullhash}{5775b0ea111287e7ae6740b390430eb1}
+      \strng{editorfullhashraw}{5775b0ea111287e7ae6740b390430eb1}
+      \field{sortinit}{Z}
+      \field{sortinithash}{96892c0b0a36bb8557c40c49813d48b3}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 40th International Conference on Machine Learning}
+      \field{series}{Proceedings of Machine Learning Research}
+      \field{title}{LeadFL: Client Self-Defense against Model Poisoning in Federated Learning}
+      \field{volume}{202}
+      \field{year}{2023}
+      \field{pages}{43158\bibrangedash 43180}
+      \range{pages}{23}
+    \endentry
+  \enddatalist
+  \datalist[entry]{apa/global//global/global/global}
+    \entry{BrainDamage}{inbook}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=6a1aa6b7eab12b931ca7c7e3f927231d}{%
+           family={LeCun},
+           familyi={L\bibinitperiod},
+           given={Yann},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=2e06fda0238979cad0d24113daf80ed5}{%
+           family={Denker},
+           familyi={D\bibinitperiod},
+           given={John},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=920b205f35e78671ab4d18f203e692f9}{%
+           family={Solla},
+           familyi={S\bibinitperiod},
+           given={Sara},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \name{editor}{1}{}{%
+        {{hash=8c406d39fa15d10e06383cfeff56d22c}{%
+           family={Touretzky},
+           familyi={T\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Morgan-Kaufmann}%
+      }
+      \strng{namehash}{9e4c6012409dc8dd9b2aa198a2059804}
+      \strng{fullhash}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{fullhashraw}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{bibnamehash}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{authorbibnamehash}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{authornamehash}{9e4c6012409dc8dd9b2aa198a2059804}
+      \strng{authorfullhash}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{authorfullhashraw}{179724ffd0900fe99ce277b3eb5ee7c9}
+      \strng{editorbibnamehash}{8c406d39fa15d10e06383cfeff56d22c}
+      \strng{editornamehash}{8c406d39fa15d10e06383cfeff56d22c}
+      \strng{editorfullhash}{8c406d39fa15d10e06383cfeff56d22c}
+      \strng{editorfullhashraw}{8c406d39fa15d10e06383cfeff56d22c}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Advances in Neural Information Processing Systems}
+      \field{title}{Optimal Brain Damage}
+      \field{volume}{2}
+      \field{year}{1989}
+    \endentry
+    \entry{ERMPA}{article}{}{}
+      \name{author}{6}{}{%
+        {{un=0,uniquepart=base,hash=bdb99e92a5bd0e26f41989c51d94c0e9}{%
+           family={Sun},
+           familyi={S\bibinitperiod},
+           given={Jingwei},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=67f3a673d1b5d096250c6b53c122ceb4}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Ang},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c2c8a8dd060d2e3d54e27ddeffddcf53}{%
+           family={DiValentin},
+           familyi={D\bibinitperiod},
+           given={Louis},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=dbf336c148fbe8eb620e4e11ea8611d1}{%
+           family={Hassanzadeh},
+           familyi={H\bibinitperiod},
+           given={Amin},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a598ab57c52f6e9189cda29ff5b955b7}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Yiran},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c7b2bb54b5e6ecaac22872ce5fa3f783}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Hai},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Curran Associates, Inc.}%
+      }
+      \strng{namehash}{bcc2aef533831e2e58f3601d32995204}
+      \strng{fullhash}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \strng{fullhashraw}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \strng{bibnamehash}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \strng{authorbibnamehash}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \strng{authornamehash}{bcc2aef533831e2e58f3601d32995204}
+      \strng{authorfullhash}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \strng{authorfullhashraw}{2f1e1be7dafa9a87487af5edf40d6a9e}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Advances in Neural Information Processing Systems}
+      \field{title}{FL-WBC: Enhancing Robustness against Model Poisoning Attacks in Federated Learning from a Client Perspective}
+      \field{volume}{34}
+      \field{year}{2021}
+      \field{pages}{12613\bibrangedash 12624}
+      \range{pages}{12}
+    \endentry
+    \entry{LeadFL}{inbook}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=681293f4f37cc140fa24230fe551b306}{%
+           family={Zhu},
+           familyi={Z\bibinitperiod},
+           given={Chaoyi},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=d33b552c14a169cffed342438407ebd5}{%
+           family={Roos},
+           familyi={R\bibinitperiod},
+           given={Stefanie},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=741fe3fe5c673eea80fa21a12adce422}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Lydia\bibnamedelima Y.},
+           giveni={L\bibinitperiod\bibinitdelim Y\bibinitperiod},
+           givenun=0}}%
+      }
+      \name{editor}{6}{}{%
+        {{hash=112eb0b147c4a7f674d015a86e5dea70}{%
+           family={Krause},
+           familyi={K\bibinitperiod},
+           given={Andreas},
+           giveni={A\bibinitperiod}}}%
+        {{hash=d94fdf38ad71e8210b4505c8fbb7fa87}{%
+           family={Brunskill},
+           familyi={B\bibinitperiod},
+           given={Emma},
+           giveni={E\bibinitperiod}}}%
+        {{hash=3da7501a79d9346572c7fd6e41b615df}{%
+           family={Cho},
+           familyi={C\bibinitperiod},
+           given={Kyunghyun},
+           giveni={K\bibinitperiod}}}%
+        {{hash=ca6c8866884502e2e8d407df0fce29d3}{%
+           family={Engelhardt},
+           familyi={E\bibinitperiod},
+           given={Barbara},
+           giveni={B\bibinitperiod}}}%
+        {{hash=0dafa6bad2e178837ff918538e24226a}{%
+           family={Sabato},
+           familyi={S\bibinitperiod},
+           given={Sivan},
+           giveni={S\bibinitperiod}}}%
+        {{hash=8bff09c02d42ded468c8b33a7e2738c7}{%
+           family={Scarlett},
+           familyi={S\bibinitperiod},
+           given={Jonathan},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {PMLR}%
+      }
+      \strng{namehash}{d880c6a28961187f935700e194b2e37a}
+      \strng{fullhash}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{fullhashraw}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{bibnamehash}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{authorbibnamehash}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{authornamehash}{d880c6a28961187f935700e194b2e37a}
+      \strng{authorfullhash}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{authorfullhashraw}{a1fe4bb3da97aa29687da1558424c4ae}
+      \strng{editorbibnamehash}{5775b0ea111287e7ae6740b390430eb1}
+      \strng{editornamehash}{134fce1f5ad57ab5067b59de0a64293f}
+      \strng{editorfullhash}{5775b0ea111287e7ae6740b390430eb1}
+      \strng{editorfullhashraw}{5775b0ea111287e7ae6740b390430eb1}
+      \field{sortinit}{Z}
+      \field{sortinithash}{96892c0b0a36bb8557c40c49813d48b3}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \true{uniqueprimaryauthor}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 40th International Conference on Machine Learning}
+      \field{series}{Proceedings of Machine Learning Research}
+      \field{title}{LeadFL: Client Self-Defense against Model Poisoning in Federated Learning}
+      \field{volume}{202}
+      \field{year}{2023}
+      \field{pages}{43158\bibrangedash 43180}
+      \range{pages}{23}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

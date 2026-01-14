@@ -1,0 +1,272 @@
+\documentclass[english,aspectratio=1610,10pt,helvet,nicetitles]{ICEbeamerTUMCD}
+% options: 169, 1610, 43, mathTUMCD, english, german, ngerman, helvet, handout, notes, ruled, nicetitles
+% Unknown options are passed to beamer class, e.g., pass t for top alignment of slide content
+\graphicspath{{./}{ressources/}{resources/}}
+
+\newcommand{\PersonTitel}{}
+\newcommand{\PersonVorname}{Claus}
+\newcommand{\PersonNachname}{Guthmann}
+\newcommand{\PersonStadt}{Munich}
+\newcommand{\PersonAdresse}{%
+    Theresienstr. 90\\%
+    80333~\PersonStadt%
+}
+\newcommand{\PersonTelefon}{@Telefon@}
+\newcommand{\PersonEmail}{@E-Mail@}
+\newcommand{\PersonWebseite}{@Web@}
+% Fakultät:
+\newcommand{\FakultaetName}{School of Computation, Information and Technology}
+\newcommand{\LehrstuhlName}{}
+
+\hyphenation{} % eigene Silbentrennung
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{makecell}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Comment out the following lines if you don't need \fullcite for citations in footnote
+\usepackage[backend=biber,style=apa]{biblatex}
+\addbibresource{eg_refs.bib} % change to your bib file 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Datum}{July 11, 2022}%{\today}
+
+\title{LeadFL}
+\subtitle{Client Self-Defense against Model Poisoning in Federated Learning {\small \\by Chaoyi Zhu, Stefanie Roos, Lydia Y. Chen}} % Comment out if no subtitle wanted
+
+\author{\textbf{\PersonVorname{} \PersonNachname{}}\inst{1} Ramazan Tan\inst{1}}
+\institute[]{\inst{1}Technical University of Munich \\ Institute for Communications Engineering
+}
+
+% \setlength{\offsetTitle}{1cm} % Adjust spacing between title and header
+% \setlength{\authorOffsetTitlepage}{5cm} % Adjust spacing between author and title
+
+% More layouts of notes can be activated by uncommenting the following
+% See https://github.com/gdiepen/latexbeamer-handoutWithNotes for all available layouts
+% \pgfpagesuselayout{3 on 1 with notes}[a4paper,border shrink=5mm]
+
+\begin{document}
+\setlength{\baselineskip}{\PraesentationAbstandAbsatz}
+\setlength{\parskip}{\baselineskip}
+% \let\thefootnote\relax\footnote
+\PraesentationMasterStandard
+
+
+
+\usetikzlibrary {arrows.meta,bending,positioning} 
+\PraesentationTitelseite % Fügt die Startseite eon
+
+\begin{frame}{Table of Contents}
+  \tableofcontents[hidesubsections] % show main structure
+  % \tableofcontents % show detailed structure
+ % \footnotetext{The line spacing in the table of content is a still a problem to show the full structure.}
+  % \tableofcontents[currentsection, hideothersubsections] % show detailed structure of current section
+\end{frame}
+
+\section{Introduction}
+\begin{frame}{Security in federated learning}
+
+\begin{center}
+  \only<1>{
+  \includegraphics[width=0.8\textwidth]{ressources/Introduction_FedaratedLearningI.png}
+  }
+  \only<2>{
+  \includegraphics[width=0.8\textwidth]{ressources/Introduction_FederatedLearningII.png}
+  }
+  \only<3>{
+  \includegraphics[width=0.8\textwidth]{ressources/Introduction_FederatedLearningIII.png}
+  }
+\end{center}
+\end{frame}
+
+\section{Background}
+\begin{frame}{Effects of Model Poisoning Attacks \footfullcite{ERMPA}}
+ 
+\begin{defbox}{Attack Effect on Parameter}
+The \textit{Attack Effect on Parameter} in the t-th round is 
+\begin{equation}
+  \delta_t := W_t - W_t^\text{opt}
+\end{equation}
+\end{defbox}
+\pause 
+\begin{thmbox}{Estimator for the Attack Effect on Parameter}
+For malicious devices selected both in round $\tau_1 $ and $\tau_2$, we can estimate $\delta_t$ for $\tau_1 < t < \tau_2$ with
+\begin{equation}
+  \hat\delta_t = \frac{N }{K} \left[\sum_{k \in \mathbb{S}_t} p^k \prod_{i=0}^{I-1} (I - \eta_t \only<3>{\color{red}}{H_{t,i}^k} \color{black})  \right] \hat\delta_{t-1}
+\end{equation}
+\end{thmbox}
+
+\end{frame}
+
+\begin{frame}{Hessian Matrix Estimation\footfullcite{BrainDamage}}
+  \begin{itemize}
+    \uncover<1->{\item Computing $H$ is expensive}
+    \uncover<2->{\item $H \approx \text{diag}(H)$}
+    \uncover<3->{\item $H \approx \text{diag}(\nabla L(\theta_{t,i+1}^k) - \nabla L(\theta_{t,i}^k))$}
+
+  \end{itemize}
+  
+\end{frame}
+
+\section{LeadFL}
+
+\begin{frame}{Overview of LeadFL}
+    \begin{equation*}
+  \hat\delta_t = \frac{N }{K} \left[\sum_{k \in \mathbb{S}_t} \only<2>{\color{red}} p^k \prod_{i=0}^{I-1} \only<4>{\color{red}}(I - \eta_t {\only<3>{\color{red}}H_{t,i}^k}) \color{black}  \right] \hat\delta_{t-1}
+\end{equation*}
+\begin{itemize}
+  \only<1>{\item \only<2->{locally} Minimize  $\hat\delta_t$}
+  \uncover<2->{\item Locally minimize  $\hat\delta_t$}
+  \only<3>{\item Add random noise}
+  \only<4>{\item Minimize  $I - \eta_t H_{t,i}^k$}
+  \uncover<5->{\item Minimize  $I - \eta_t \tilde H_{t,i}^k$}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Definition}
+  \begin{defbox}{LeadFL Weight Update}
+    The LeadFL local learning equation is 
+    \begin{equation}
+           \tilde \theta_{t,i+1}^k \leftarrow \theta_{t,i}^k - \eta_t \nabla L(\theta_{t,i}^k) 
+    \end{equation}
+    \begin{equation}
+      \theta_{t,i+1}^k \leftarrow \tilde \theta_{t,i+1}^k {\only<2>{\color{red}} - \eta_t \alpha \text{clip}[\nabla (I - \eta_t \tilde{H}_{t,i}^k), q]}
+    \end{equation}
+  \end{defbox}
+\end{frame}
+
+\begin{frame}{Hessian Matrix Estimation II \footfullcite{BrainDamage}}
+  \begin{itemize}
+    \color{gray}
+    \uncover<1->{\item $H$ is computationally expensive}
+    \uncover<1->{\item $H \approx \text{diag}(H)$}
+    \uncover<1->{\item $H \approx \text{diag}(\nabla L(\theta_{t,i+1}^k) - \nabla L(\theta_{t,i}^k))$}
+    \color{black}
+    \uncover<1->{\item $H \approx \text{diag}(\tilde\theta_{t,i+1}^k - \theta_{t,i}^k - \Delta \theta_{t,i}^k )/\eta_t$}
+
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}{LeadFL Algorithm (Client)}
+
+  For each local round, do:
+  \begin{enumerate}
+    \uncover<1->{
+    \item Compute gradients and update intermediary weights \\
+    $\tilde\theta_{t,i+1}^k \leftarrow \theta_{t,i}^k - \eta_t \nabla L(\theta_{t,i}^k)$
+    }
+    
+    \uncover<2->{
+    \item Estimate Hessian matrix \\
+    $\tilde H_{t,i}^k \leftarrow \text{diag}(\tilde\theta_{t,i+1}^k - \theta_{t,i}^k - \Delta \theta_{t,i}^k )/\eta_t$
+    }
+    
+    \uncover<3->{
+    \item Compute regularization term \\
+    $R_{t,i}^k \leftarrow \text{clip}[\nabla(I- \eta_t \tilde H_{t,i}^k), q]$
+    }
+
+    \uncover<4->{
+    \item Update weights\\
+    $\theta_{t,i+1}^k \leftarrow \tilde\theta_{t,i+1}^k  - \eta_t \alpha  R_{t,i}^k$
+    }
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Convergence}
+  \begin{figure}
+  \includegraphics[width=0.65\textwidth]{ressources/MaintaskAccuracy.png}  
+
+\caption{Main task accuracy of FashionMNIST-IID\footfullcite[Table 1]{LeadFL}}
+  
+\end{figure}
+\end{frame}
+
+\begin{frame}{Evaluation}
+\begin{figure}
+\only<1>{
+\includegraphics[width=0.55\textwidth]{ressources/FashionMNIST-IID.png}  
+}
+\only<2>{
+\includegraphics[width=0.5\textwidth]{ressources/FashionMNIST-NonIID.png}
+}
+\caption{Backdoor Accuracy of FashionMNIST-\only<2>{Non-}IID\footfullcite[Figure 3]{LeadFL}}
+  
+\end{figure}
+\end{frame}
+
+
+\section{Conclusion}
+
+
+\begin{frame}{Limitations}
+\begin{itemize}
+    \uncover<1->{\item Incomplete explanation of the Hessian matrix estimation.}
+    \only<1>{
+       \[\Delta \theta_{t,i}^k = \theta_{t,i}^k - \theta_{t,i}^k\]
+    }
+
+    \uncover<2->{\item Differences between the implementation and the paper.}
+
+    \uncover<3->{\item Unexplained choice of parameters in the evaluation.}
+    \only<3>{
+      \begin{itemize}
+        \item FashionMNIST: 2 convolutional layers, 1 fully connected layer, $\alpha = 0.4, q = 0.2$
+        \item CIFAR10: 2 convolution, 3 fully connected , $\alpha = 0.25, q = 0.2$
+        \item CIFAR100: ResNet9, $\alpha = 0.15, q = 0.2$
+      \end{itemize}
+    }
+
+    
+\end{itemize}
+\end{frame}
+
+\definecolor{darkgreen}{HTML}{467a2c}
+\begin{frame}{Conclusion}
+  \centering
+  
+  \begin{tabular}{l|r}    
+    \thead{{\Huge \color{darkgreen} +}} & \thead{{\Huge \color{red}-}}\\
+    \uncover<2->{Increased attack recovery} & \uncover<2->{Decreased Main Taks Accuracy} \\[5px]
+    \uncover<3->{Compatibility} & \uncover<3->{More Difficult Attack Detection}  \\[5px]
+     \uncover<4->{Performance} & \uncover<4->{Limited Evaluation } \\[5px]
+
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{Q \& A}
+    \begin{equation*}
+      \theta_{t,i+1}^k \leftarrow \theta_{t,i}^k - \eta_t \nabla L(\theta_{t,i}^k)  {\color{red} - \eta_t \alpha \text{clip}[\nabla (I - \eta_t \tilde{H}_{t,i}^k), q]}
+    \end{equation*}
+    
+\begin{columns}
+\column{0.85\paperwidth}
+\printbibliography
+\end{columns}
+\end{frame}
+
+\begin{frame}{Hessian Matrix Approximation}
+  
+\end{frame}
+\begin{frame}{Robustness}
+  
+\end{frame}
+
+\begin{frame}{Evaluation Model Architecture}
+\begin{itemize}
+  \item FashionMNIST: 2 convolution, 1 fully connected, $\alpha = 0.4, q = 0.2$
+  \item CIFAR10: two convolution, three fully connected , $\alpha = 0.25, q = 0.2$
+  \item CIFAR100: ResNet9, $\alpha = 0.15, q = 0.2$
+\end{itemize}
+  
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document} % !!! NICHT ENTFERNEN !!!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

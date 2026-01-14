@@ -1,0 +1,179 @@
+\documentclass[english,aspectratio=1610,10pt,helvet,nicetitles]{ICEbeamerTUMCD}
+% options: 169, 1610, 43, mathTUMCD, english, german, ngerman, helvet, handout, notes, ruled, nicetitles
+% Unknown options are passed to beamer class, e.g., pass t for top alignment of slide content
+\graphicspath{{./}{ressources/}{resources/}}
+
+\newcommand{\PersonTitel}{}
+\newcommand{\PersonVorname}{Max}
+\newcommand{\PersonNachname}{Patternman}
+\newcommand{\PersonStadt}{Munich}
+\newcommand{\PersonAdresse}{%
+    Theresienstr. 90\\%
+    80333~\PersonStadt%
+}
+\newcommand{\PersonTelefon}{@Telefon@}
+\newcommand{\PersonEmail}{@E-Mail@}
+\newcommand{\PersonWebseite}{@Web@}
+% Fakultät:
+\newcommand{\FakultaetName}{Department of Electrical and Computer Engineering}
+\newcommand{\LehrstuhlName}{Institute for Communications Engineering}
+
+\hyphenation{} % eigene Silbentrennung
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Comment out the following lines if you don't need \fullcite for citations in footnote
+\usepackage[backend=biber,style=apa]{biblatex}
+\addbibresource{eg_refs.bib} % change to your bib file 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Datum}{July 11, 2022}%{\today}
+
+\title{Example presentation}
+\subtitle{An introduction to ICE beamer} % Comment out if no subtitle wanted
+\author{\PersonVorname{} \PersonNachname{}\inst{1} Another Author\inst{2}}
+\institute[]{\inst{1}Technical University of Munich \\ Institute for Communications Engineering
+\and \inst{2} Another Institute}
+
+% \setlength{\offsetTitle}{1cm} % Adjust spacing between title and header
+% \setlength{\authorOffsetTitlepage}{5cm} % Adjust spacing between author and title
+
+% More layouts of notes can be activated by uncommenting the following
+% See https://github.com/gdiepen/latexbeamer-handoutWithNotes for all available layouts
+% \pgfpagesuselayout{3 on 1 with notes}[a4paper,border shrink=5mm]
+
+\begin{document}
+\setlength{\baselineskip}{\PraesentationAbstandAbsatz}
+\setlength{\parskip}{\baselineskip}
+% \let\thefootnote\relax\footnote
+\PraesentationMasterStandard
+
+\PraesentationTitelseite % Fügt die Startseite eon
+
+\begin{frame}{Usage of Table of Contents}
+  \tableofcontents[hidesubsections] % show main structure
+  % \tableofcontents % show detailed structure
+  \footnotetext{The line spacing in the table of content is a still a problem to show the full structure.}
+  % \tableofcontents[currentsection, hideothersubsections] % show detailed structure of current section
+\end{frame}
+
+
+\section{Basics}
+\begin{frame}{Basics}
+  \begin{itemize}
+  \item This presentation is an adapted version of the TUM corporate design template.
+  \item Instead of many .tex files it is now a self-contained class.
+  \item To get it running, you require the file ICEbeamerTUMCD.cls and the folder ``./resources''
+  \item It's still horrible, but a little less than before.
+  \end{itemize}
+\end{frame}
+\subsection{Boxes}
+\begin{frame}{Boxes}
+    \begin{bluebox}{A blue box}
+      Nice to highlight stuff, e.g., theorems, etc.
+    \end{bluebox}
+    \begin{orangebox}{An orange box}
+      Comes in four stylish colors.
+    \end{orangebox}
+    \begin{greenbox}{A green box}
+      Surprisingly, this command gives a green box.
+    \end{greenbox}
+    \begin{darkbluebox}{Another blue box}
+      Slightly darker blue box
+    \end{darkbluebox}
+\end{frame}
+
+\begin{frame}{Environment Boxes}
+    \begin{thmbox}{Important Stuff}
+      Same as \emph{bluebox}, but with Theorem in the titlebox.
+    \end{thmbox}
+    \begin{defbox}{Define Stuff}
+      Same as \emph{orangebox}, but with Definition in the titlebox.
+    \end{defbox}
+    \begin{egbox}{Exemplary Stuff}
+      Same as \emph{greenbox}, but with Example in the titlebox.
+    \end{egbox}
+\end{frame}
+
+
+
+\begin{frame}{Aspect Ratios}
+  \begin{itemize}
+  \item There are several different aspect ratios to choose from:
+    \begin{itemize}
+    \item 16:9
+    \item 16:10
+    \item 4:3
+    \end{itemize}
+    \item To choose one, pass it as an option to the class (see first line), without the ``:''.
+  \end{itemize}
+  \begin{minipage}{0.5\linewidth}
+    In 16:9 and 16:10 slides are pretty wide.
+  \end{minipage}%
+  \begin{minipage}{0.5\linewidth}
+    So it often makes sense to split them vertically.
+  \end{minipage}
+\end{frame}
+\subsection{Colors and Fonts}
+\begin{frame}{Colors}
+  \begin{itemize}
+  \item The TUM colors and some additional colors ``similar in style'' are available
+    \begin{itemize}
+    \item \color{TUMBlau} \emph{TUMBlue / TUMBlau} - Pantone 300
+\item \color{TUMBlauDunkel} \emph{TUMBlueDark / TUMBlauDunkel} - Pantone 301
+\item \color{TUMBlauHell} \emph{TUMBlueLight / TUMBlauHell} - Pantone 283
+\item \color{TUMBlauMittel} \emph{TUMBlueMedium / TUMBlauMittel} - Pantone 542
+\item \color{TUMElfenbein} \emph{TUMIvory / TUMElfenbein} - Pantone 7527
+\item \color{TUMGruen} \emph{TUMGreen / TUMGruen} - Pantone 383
+\item \color{TUMGruenDunkel}\emph{TUMGreenDark / TUMGruenDunkel}
+\item \color{TUMOrange}{RGB} \emph{TUMOrange} - Pantone 158
+\item \color{TUMGrau} \emph{TUMGrey / TUMGrau} - Grau 60
+\item \color{TUMRot} \emph{TUMRed / TUMRot}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Fonts}
+  \textbf{Math Font:}\\
+  If you really want, use the TUMCD math font (passing mathTUMCD enables the package mathptmx).
+  % I think it doesn't look nice so it's disabled by default.\\
+  Most noticeable with calligraphic letters like $\mathcal{C}$ and $\mathcal{D}$.\\
+  Alternatively, you can add $\backslash$usefonttheme$[$onlymath$]$$\{$serif$\}$ before $\backslash$begin$\{$document$\}$ to change to the math font used in most papers.\\[1em]
+  \textbf{Text Font:}\\
+  The TUM CD template uses Helvetica, but some might prefer to stick with the \emph{lmodern} font of the LNT templates. If you want to use Helvetica, pass the option \emph{helvet} to the class.\footnote{Also, footnotes leave more space beneath them now.} \\[0.5em]
+  Titles are usually in the same font as the text. To use the \textrm{rm font} instead, pass \emph{nicetitles} to the class.
+\end{frame}
+
+\section{Citations}
+\begin{frame}{Citations}
+  Citations in beamer were often dealed by pasting the full text in the footnote. The biblatex package provides a solution allowing you reuse your .bib file for presentations. Here are several ways of usage:\\[-.5em]
+  \begin{itemize}
+  \item cite full text in footnote \footfullcite{art} %or \footnote{\footnotesize\fullcite{art}}
+  \item short citation with author and year in text \autocite{art}
+  \item cite title in text \citetitle{art2}
+  \item \textit{*For more usage please refer to \href{http://tug.ctan.org/info/biblatex-cheatsheet/biblatex-cheatsheet.pdf}{\textcolor{TUMBlue}{Biblatex Cheat Sheet}}.}\\
+  \end{itemize}
+  \vspace{-1em}
+  Note that you need to run ``\textbf{Biber}'' instead of ``BibTeX'' to generate the .bbl file.\\
+  You can print all references that are cited at the end of presentation, as shown in the next slide.
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+\printbibliography
+\end{frame}
+
+\section{Notes Style}
+\begin{frame}{Notes}
+  Beamer has a \emph{handout} mode that, e.g., doesn't print an extra slide for every \emph{\textbackslash only} command. For printing and handing out to students it can also be convenient to leave some room for notes. When the option \emph{notes} is passed \textbf{together} with the \emph{handout} option, the output will be a A4 page with the bottom half empty for notes.\\
+  At the moment, this is the only layout that is implemented directly as a class option. For more layout see the comments before \textbackslash begin \{document\} \\[0.5em]
+  Passing the option \emph{ruled} adds black lines to write on.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document} % !!! NICHT ENTFERNEN !!!
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
