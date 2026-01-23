@@ -280,6 +280,57 @@ class FederatedServer:
 
 
 # ============================================================================
+# CLIENT SELECTION STRATEGIES
+# ============================================================================
+
+def periodic_client_selection(round_num, num_clients, clients_per_round, 
+                              num_malicious_clients, malicious_client_ids):
+    """
+    Periodic client selection strategy:
+    - Rounds 1-2 of each 10-round cycle: Select 6 malicious + 4 benign clients
+    - Rounds 3-10 of each 10-round cycle: Select 10 benign clients (0 malicious)
+    
+    Args:
+        round_num: Current round number (1-indexed)
+        num_clients: Total number of clients
+        clients_per_round: Number of clients to select per round
+        num_malicious_clients: Total number of malicious clients available
+        malicious_client_ids: Set or list of client IDs that are malicious
+    
+    Returns:
+        List of selected client IDs for this round
+    """
+    # Convert to list if it's a set (for random.sample compatibility)
+    malicious_client_ids = list(malicious_client_ids)
+    
+    # Determine position in 10-round cycle (0-9)
+    cycle_position = (round_num - 1) % 10
+    
+    if cycle_position < 2:  # Rounds 1-2 of cycle: 6 malicious + 4 benign
+        num_malicious_to_select = min(6, len(malicious_client_ids), clients_per_round)
+        num_benign_to_select = clients_per_round - num_malicious_to_select
+        
+        # Get benign client IDs
+        benign_client_ids = [i for i in range(num_clients) if i not in malicious_client_ids]
+        
+        # Select malicious clients
+        selected_malicious = random.sample(malicious_client_ids, num_malicious_to_select)
+        
+        # Select benign clients
+        selected_benign = random.sample(benign_client_ids, 
+                                        min(num_benign_to_select, len(benign_client_ids)))
+        
+        selected_client_ids = selected_malicious + selected_benign
+        
+    else:  # Rounds 3-10 of cycle: All benign (0 malicious)
+        benign_client_ids = [i for i in range(num_clients) if i not in malicious_client_ids]
+        selected_client_ids = random.sample(benign_client_ids, 
+                                          min(clients_per_round, len(benign_client_ids)))
+    
+    return selected_client_ids
+
+
+# ============================================================================
 # MAIN TRAINING LOOP
 # ============================================================================
 
@@ -315,6 +366,12 @@ def run_federated_learning(
     # Data Distribution
     iid: bool = True,  # True: uniform distribution, False: limited labels (5 classes per client)
     num_classes_per_client: int = 5,  # For non-IID limited labels strategy
+    
+    # Client Selection Strategy
+    periodic_selection: bool = False,  # True: periodic malicious/benign pattern, False: random
+    periodic_malicious_per_round: int = 6,  # Number of malicious clients in malicious rounds
+    malicious_rounds_per_cycle: int = 2,  # Number of consecutive malicious rounds per cycle
+    benign_rounds_per_cycle: int = 8,  # Number of consecutive benign rounds per cycle
     
     # System
     device: str = 'cuda' if torch.cuda.is_available() else 'cpu',
@@ -496,9 +553,27 @@ def run_federated_learning(
     for round_idx in range(rounds):
         print(f"\n--- Round {round_idx + 1}/{rounds} ---")
         
-        # Select clients for this round
-        selected_client_ids = random.sample(range(num_clients), clients_per_round)
-        selected_clients = [clients[i] for i in selected_client_ids]
+        # Select clients for this round based on strategy
+        if periodic_selection:
+            selected_client_ids = periodic_client_selection(
+                round_num=round_idx + 1,  # Convert to 1-indexed
+                num_clients=num_clients,
+                clients_per_round=clients_per_round,
+                num_malicious_clients=num_malicious_clients,
+                malicious_client_ids=malicious_client_ids
+            )
+            selected_clients = [clients[i] for i in selected_client_ids]
+            
+            # Calculate cycle info for logging
+            cycle_position = (round_idx) % 10
+            is_malicious_round = cycle_position < 2
+            
+            print(f"Periodic selection (Round {cycle_position + 1}/10 in cycle, {'Malicious' if is_malicious_round else 'Benign'} phase)")
+        else:
+            # Random selection (original behavior)
+            selected_client_ids = random.sample(range(num_clients), clients_per_round)
+            selected_clients = [clients[i] for i in selected_client_ids]
+            print(f"Random selection")
         
         num_malicious_selected = sum(1 for c in selected_clients if c.is_malicious)
         print(f"Selected clients: {clients_per_round} (Malicious: {num_malicious_selected})")
@@ -584,7 +659,7 @@ if __name__ == "__main__":
         # Attack Configuration
         attack_type="backdoor",      # Options: "none", "backdoor"
         backdoor_target_label=0,
-        backdoor_poisoning_rate=0.1,
+        backdoor_poisoning_rate=0.3,
         
         # Training Parameters
         batch_size=32,
@@ -595,6 +670,9 @@ if __name__ == "__main__":
         # Data Distribution
         iid=True,  # True: uniform distribution, False: limited labels (5 classes per client)
         num_classes_per_client=5,  # For non-IID
+        
+        # Client Selection Strategy
+        periodic_selection=True,  # True: periodic pattern (6 malicious for rounds 1-2, then 8 benign rounds)
         
         # System
         device='cuda' if torch.cuda.is_available() else 'cpu',
@@ -638,5 +716,5 @@ if __name__ == "__main__":
     plt.grid(True)
     
     plt.tight_layout()
-    plt.savefig('federated_learning_results5.png')
-    print("\nResults saved to 'federated_learning_results5.png'")
+    plt.savefig('federated_learning_results_periodic_lead.png')
+    print("\nResults saved to 'federated_learning_results_periodic_lead.png'")
