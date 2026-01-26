@@ -1,0 +1,99 @@
+# Pip requirements for LeadFL
+# Usage: pip install -r requirements_pip.txt
+
+# Deep Learning
+torch>=2.0
+torchvision
+torchaudio
+torchmetrics>=0.5.0
+torchsummary
+tensorboard
+
+# Experiment tracking
+wandb
+
+# Scientific computing
+numpy
+scipy
+scikit-learn
+pillow
+cython
+
+# Data handling
+dataclass-csv
+dataclasses-json
+fsspec
+
+# ML utilities
+hdbscan
+joblib
+
+# Web/API
+aiohttp
+async-timeout
+requests
+urllib3
+grpcio
+protobuf
+websocket-client
+
+# Kubernetes/Docker
+kubernetes
+docker-pycreds
+
+# Auth
+google-auth
+google-auth-oauthlib
+oauthlib
+requests-oauthlib
+
+# Utilities
+click
+colorful
+colorlog
+jinja2
+markupsafe
+marshmallow
+marshmallow-enum
+packaging
+prettyprinter
+pyyaml
+pint
+python-dateutil
+python-dotenv
+schedule
+tqdm
+six
+attrs
+aenum
+future
+iteration-utilities
+retrying
+table-logger
+stringcase
+
+# Git
+gitpython
+
+# Testing
+pytest
+parameterized
+
+# Monitoring
+psutil
+setproctitle
+shortuuid
+sentry-sdk
+
+# Misc
+absl-py
+cachetools
+certifi
+chardet
+idna
+multidict
+yarl
+werkzeug
+markdown
+pygments
+pytz
