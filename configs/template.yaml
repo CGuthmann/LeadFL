@@ -1,0 +1,34 @@
+aggregation: bulyan
+attack_client: Backdoor
+attack_epochs: 10
+attack_server: null
+backdoor_config: configs/backdoor_tasks/mnist_params_pattern.yaml
+backdoor_type: 9-pixel
+batch_size: 32
+clients_per_round: 10
+cluster: false
+cluster_stored_rounds: 10
+cuda: false
+data_sampler: n labels   # options: uniform, n_labels: non-iid distribution implemented in the paper is 5 labels 
+data_sampler_args:
+- 5
+- 42
+dataset_name: fashion-mnist
+defense: LeadFL  # LeadFL, WBC, LDP, myWBC, LeadFLnorm, None
+epochs: 10
+experiment_prefix: Final
+mal_boost: 1
+mal_clients_per_round: 6  # mal client number
+net_name: FashionMNISTCNN
+num_clients: 100
+num_mal_clients: 25
+offload_stategy: deadline
+output_location: output
+pert_strength: 0.2
+regular_weight: 0.4
+rounds: 80
+selection_method: periodic  # federator.py line 450 orada kaç tur malicious gelir ayarla
+single_machine: true
+tensor_board_active: true
+use_wandb: false
+wait_for_clients: true
