@@ -1,0 +1,2 @@
+Report:
+The report has to be submitted on Moodle on the day of the exam. The report should be at most 6 pages and has to include an explanation of the paper you picked, your observations, your simulation results, and a jointly written summary (by all group members) of one paper presented by another group, describing what you learned from their presentation/poster.
