@@ -103,13 +103,13 @@
                         % midfloat.sty package (by the same author) as IEEE
                         % does not format its papers in such ways.
 
-%\usepackage{amsmath}   % From the American Mathematical Society
+\usepackage{amsmath}   % From the American Mathematical Society
                         % A popular package that provides many helpful commands
                         % for dealing with mathematics. Note that the AMSmath
                         % package sets \interdisplaylinepenalty to 10000 thus
                         % preventing page breaks from occurring within multiline
                         % equations. Use:
-%\interdisplaylinepenalty=2500
+\interdisplaylinepenalty=2500
                         % after loading amsmath to restore such page breaks
                         % as IEEEtran.cls normally does. amsmath.sty is already
                         % installed on most LaTeX systems. The latest version
@@ -139,129 +139,205 @@
 % *** Do not use packages that alter fonts (such as pslatex).         ***
 % There should be no need to do such things with IEEEtran.cls V1.6 and later.
 
-
+\usepackage{algorithm}
+\usepackage{algpseudocode} 
 % Your document starts here!
 \begin{document}
 
 % Define document title and author
-\title{Guidelines for Writing a Seminar Report}
-\author{Firstname Lastname
-\thanks{Advisor: Firstname~Lastname,~M.Sc., Lehrstuhl für Nachrichtentechnik, TUM, WS 2017/2018.}}
-\markboth{Hauptseminar Digitale Kommunikationssysteme}{}
+\title{{Report on}\\ \Large LeadFL: Client Self-Defense against Model Poisoning in Federated Learning}
+\author{\textbf{Claus Guthmann}, Ramazan Tan}
+
+\markboth{Trustworthy Distributed Learning }{}
 \maketitle
 
-% Write abstract here
+%
+% LeadFL - 4 Pages
+%
+
+% Write abstract here(50-80 words)
 \begin{abstract}
-The short abstract (50-80 words) is intended to give the reader an overview of the work.
-Keep in mind that he does not known the work yet.
+    Existing defense mechanisms in federated learning often assume an approximately constant proportion of 
+    malicious clients throughout training. However, when only a subset of clients participates in each 
+    communication round, the fraction of malicious clients can vary substantially across rounds. 
+    Over a sufficient number of iterations, this variability makes it likely that some rounds will 
+    contain a majority of malicious participants. Under this premise, the paper \textit{LeadFL: Client Self-Defense against Model Poisoning in Federated Learning} \cite{LeadFL} demonstrates that poisoning attacks occurring in such rounds can have long-lasting effects on the global model. To address this issue, the authors propose a client-side defense mechanism that significantly improves the model’s ability to recover from these transient but severe poisoning events.
+
 \end{abstract}
 
-% Each section begins with a \section{title} command
 \section{Introduction}
-% \IEEEPARstart{}{} creates a tall first letter for this first paragraph
-\IEEEPARstart{T}{his} section introduces the topic and leads the reader on to the main part.
-Do not forget to mention the papers your seminar work is based on!
+\IEEEPARstart{f}{ederated} 
+ learning enables the collaborative training of machine learning models across distributed clients while keeping local data private. However, this decentralized setting also exposes the training process to model poisoning attacks, where malicious clients manipulate their updates to degrade the global model. Many existing defense mechanisms implicitly assume that the proportion of malicious clients remains approximately constant throughout training. In practice, federated learning systems typically select only a subset of clients to participate in each communication round, causing the fraction of malicious clients to fluctuate over time. As a result, it becomes increasingly likely that some rounds contain an unusually high—or even majority—share of malicious participants, especially over long training horizons.
 
-% Main Part
-\section{Main Part}
-% LaTeX takes complete care of your document layout ...
-The presentation's content is summarized in the report in 4~pages.
-% ... but you can insert a line break manually with two backslashes, if needed: \\
-The author should fill, but not exceed, this space. \\
-The report should be a self-contained report, so that it can be understood without studying additional literature.
+The paper \textit{LeadFL: Client Self-Defense against Model Poisoning in Federated Learning} \cite{LeadFL} addresses this often-overlooked scenario. It shows that poisoning attacks occurring during such adversarial spikes can have long-lasting effects on the global model, even when the system later returns to benign conditions. To mitigate this issue, LeadFL introduces a client-side defense mechanism designed to limit the impact of these transient but severe attacks and to accelerate recovery in subsequent rounds.
 
-\section{Format}
-The report can be written in \LaTeX{} or Microsoft Word, but \LaTeX{} is definitely preferred.
-Its appearance should be as close to this document as possible to achieve consistency in the proceedings.
+In this report, we begin by presenting the preliminary concepts and results required to understand the LeadFL approach. We then provide an overview of the method itself and discuss its potential advantages in federated learning environments subject to spiking adversarial participation, followed by an examination of its limitations. To further assess its effectiveness, we implemented the LeadFL algorithm and extended the original evaluation to cover previously unaddressed cases. Finally, we present the results of our own experiments, which corroborate that LeadFL significantly improves robustness against the attack patterns considered in the paper.
 
-% You can cite a book or paper by using \cite{reference}.
-% The references will be defined at the end of this .tex file in the bibliography
-References should be cited as numbers, and should be ordered by their appearance (example: ``... as shown in \cite{HOP96}, ...'').
-Only references that are actually cited can be listed in the references section.
-The references' format should be evident from the examples in this text.
+\section{Background}
+A central idea is to reduce the lasting influence of a burstial attack. One way to formally characterize this lingering effect was introduced in \textit{FL-WBC: Enhancing Robustness against Model Poisoning Attacks in Federated Learning from a Client Perspective} \cite{FLwbc} through the notion of the \textbf{Attack Effect on Parameters}. For a given communication round $t$, let $W_t$ denote the global model parameters resulting from potentially malicious client updates, and let $W_t^M$ denote the parameters that would have been obtained in the absence of malicious behavior. The attack effect is then defined as
+\begin{equation}
+\delta_t := W_t - W_t^M.    
+\end{equation}
 
-References should be of academic character and should be published and accessible.
-Your advisor can answer your questions regarding literature research.
-You must cite all used sources.
-Examples of good references include text books and scientific journals or conference proceedings.
-If possible, citing internet pages should be avoided. In particular, Wikipedia is \emph{not} an appropriate reference in academic reports.
-Avoiding references in languages other than English is recommended.
+The authors further derive a recursive approximation of this quantity,
+\[
+\delta_t \approx \hat{\delta}_t := \frac{1}{|C_t|} \left[ \sum_{c \in C_t} \prod_{i=0}^{I-1} \left( I - \eta_t H_{t,i}^c \right) \right] \hat{\delta}_{t-1},
+\]
+where $C_t$ denotes the set of clients selected in round $t$ (assumed to be equally weighted), $\eta_t$ is the learning rate, $I$ is the number of local training steps, and $H_{t,i}^c$ represents the Hessian matrix of the local loss function.
 
-% You can reference tables and figure by using the \ref{label} command. Each table and figure needs to have a UNIQUE label.
-Figures and tables should be labeled and numbered, such as in Table~\ref{tab:simParameters} and Fig.~\ref{fig:tf_plot}.
+Empirically, the Hessian matrices $H_{t,i}^c$ are often highly sparse, which causes the aggregated transformation
+\begin{equation}
+\frac{1}{|C_t|} \left[ \sum_{c \in C_t} \prod_{i=0}^{I-1} \left( I - \eta_t H_{t,i}^c \right) \right]
+\end{equation}
+to remain close to the identity matrix. As a consequence, the attack effect $\delta_t$ decays only slowly over time, leading to the observed persistence of poisoning attacks.
 
-% This is how you define a table: the [!hbt] means that LaTeX is forced (by the !) to place the table exactly here (by h), or if that doesnt work because of a pagebreak or so, it tries to place the table to the bottom of the page (by b) or the top (by t).
+The FL-WBC \cite{FLwbc} client-side defense seeks to counteract this  by injecting random noise into local updates, thereby accelerating the decay of the attack effect. Building on this insight, LeadFL \cite{LeadFL} proposes a more targeted approach: instead of relying on random perturbations, it introduces a specifically designed regularization term.
+
+Directly computing the full Hessian matrix $H_{t,i}^c$ for  neural networks is, however, computationally prohibitive. To make the approach tractable in a federated learning setting, LeadFL relies on an efficient approximation of the Hessian inspired by the \textit{Optimal Brain Damage} framework \cite{OPD}.
+
+Specifically, the method restricts attention to the diagonal elements of the Hessian, thereby ignoring inter-parameter dependencies. While this simplification sacrifices second-order interactions, it significantly reduces computational complexity and has been shown to provide useful curvature information in large-scale models. The diagonal entries capture the sensitivity of the gradient with respect to individual parameters and can be approximated via finite differences of successive gradients.
+
+Formally, the Hessian matrix is approximated as
+\begin{equation}
+    \label{equation:diag}
+    H_{t,i}^c \approx \tilde H_{t,i}^c := \operatorname{diag}\bigl(\nabla L(W_{t,i+1}^c) - \nabla L(W_{t,i}^c)\bigr),
+\end{equation}
+where $W_{t,i}^c$ denotes the local model parameters of client $c$ at global round $t$ and local step $i$, and $L(\cdot)$ is the local loss function. 
+
+\section{LeadFL}
+The core idea of LeadFL \cite{LeadFL} is to reduce the persistence of poisoning effects by locally minimizing the term $I - H_{t,i}^c$ on each client, thereby accelerating the decay of the attack effect described in the previous section. To achieve this, LeadFL augments the standard local optimization objective with an additional regularization term whose gradient is incorporated into each update step.
+
+Concretely, each local update is computed in two stages. First, a standard gradient descent step is performed,
+\begin{equation}
+    \tilde W_{t,i+1}^c := W_{t,i}^c - \eta_t \nabla L(W_{t,i}^c),
+\end{equation}
+yielding intermediate model parameters $\tilde W_{t,i+1}^c$. In a second step, the regularization update is applied,
+\begin{equation}
+    W_{t,i+1}^c := \tilde W_{t,i+1}^c - \eta_t \alpha \, \operatorname{clip}\!\left( \nabla \bigl( I - \eta_t \tilde H_{t,i}^c \bigr), q \right),
+\end{equation}
+where $\alpha$ controls the strength of the regularization and \emph{clip} limits the absolute value of each entry to the clipping threshold $q$.
+
+This two-stage formulation allows the intermediate parameters $\tilde W_{t,i+1}^c$ to be reused in constructing a computationally efficient approximation of the Hessian. However, the derivation of this approximation in the original paper contains errors. We therefore adopt the following formulation, which we believe to be a mathematically consistent approximation closely aligned with the intended method:
+\begin{equation}
+    \tilde H_{t,i}^c \approx (W_{t,i}^c - \tilde W_{t,i+1}^c + \Delta W_{t,i}^c)/\eta_t,
+\end{equation}
+where $\Delta W_{t,i}^c := W_{t,i}^c - W_{t,i-1}^c$ denotes the parameter change between successive local steps. It is important to note that this Hessian approximation is only accurate up to the contribution of the regularization term applied in the previous local update. 
+
+Combining the previous steps, the local client iteration of LeadFL can be summarized as follows (cf. Algorithm 1 in \cite{LeadFL}):
+
+\begin{algorithm}
+\caption{\emph{LeadFL} Local Client Iteration}
+\begin{enumerate}[]
+    \item[1:] {Compute gradients and update intermediate weights:} \\
+    $\tilde W_{t,i+1}^c \leftarrow W_{t,i}^c - \eta_t \nabla L(W_{t,i}^c)$
+    
+    \item[2:] {Estimate the Hessian matrix:} \\
+    $\tilde H_{t,i}^c \leftarrow (W_{t,i}^c - \tilde W_{t,i+1}^c + \Delta W_{t,i}^c)/\eta_t$
+    
+    \item[3:] {Compute the regularization term:} \\
+    $R_{t,i}^c \leftarrow \operatorname{clip}\!\left( \nabla \bigl(I - \eta_t \tilde H_{t,i}^c \bigr), q \right)$
+    
+    \item[4:] {Update the local weights with the regularization term:} \\
+    $W_{t,i+1}^c \leftarrow \tilde W_{t,i+1}^c - \eta_t \alpha R_{t,i}^c$
+\end{enumerate}
+\end{algorithm}
+
+
+
+The authors of LeadFL subsequently implement and evaluate the proposed defense under a range of experimental settings. Their primary setup consists of 100 clients, of which 25 are malicious. Training is performed over 80 global rounds, with each client executing 10 local training steps per round. In each global round, 10 clients are selected uniformly at random; this client selection is kept consistent across different experimental runs to ensure comparability (additional results for alternative client selection strategies are reported in the appendix of \cite{LeadFL}).
+
+The evaluation considers several server-side aggregation defenses, namely SparseFed, Multi-Krum, and Bulyan. For the LeadFL client-side defense, the clipping threshold is fixed at $q = 0.2$. The regularization strength $\alpha$ is varied across datasets, with $\alpha = 0.4$ for FashionMNIST and $\alpha = 0.25$ for CIFAR10. Due to the randomized client selection process, the number of malicious participants fluctuates across rounds, leading to significant variability in backdoor success rates. To account for this effect, the authors report both the final backdoor accuracy and the average backdoor accuracy over the entire training process.
+
 \begin{table}[!hbt]
-    % Center the table
     \begin{center}
-    % Title of the table
-    \caption{Simulation Parameters}
-    \label{tab:simParameters}
-    % Table itself: here we have two columns which are centered and have lines to the left, right and in the middle: |c|c|
-    \begin{tabular}{|c|c|}
-        % To create a horizontal line, type \hline
+    \caption{Comparison of defenses under 9-pixel pattern backdoor attack on IID FashionMNIST dataset. ( cf. Table 1 \cite{LeadFL})}
+    \label{tab:IIDMNIST}
+    \begin{tabular}{|c|c|c|c|c|}
         \hline
-        % To end a column type &
-        % For a linebreak type \\
-        Information message length & $k=16000$ bit \\
+        Server-side Defense & \multicolumn{4}{|c|}{Multi-Krum} \\\hline 
+        Client-side Defense & None & LDP & FL-WBC & LeadFL \\ \hline 
+        Maintask Accuracy  & 89.3 & 87 & 87.2 & 87.9  \\ \hline 
+        Backdoor Accuracy Avg.  & 82.6 & 76.0 & 77.5 & 32.9 \\ \hline 
+        Backdoor Accuracy Final  &93.2  &79.6  &80.6 &0.0 \\ \hline 
+    \end{tabular}
+    \end{center}
+\end{table}
+\begin{table}[!hbt]
+    \begin{center}
+    \caption{Comparison of defenses under 9-pixel pattern backdoor attack on IID CIFAR10 dataset. ( cf. Table 2 \cite{LeadFL})}
+    \label{tab:IIDCIFAR}
+    \begin{tabular}{|c|c|c|c|c|}
         \hline
-        Radio segment size & $b=160$ bit \\
-        \hline
-        Rate of component codes & $R_{cc}=1/3$\\
-        \hline
-        Polynomial of component encoders & $[1 , 33/37 , 25/37]_8$\\
-        \hline
+        Server-side Defense & \multicolumn{4}{|c|}{Multi-Krum} \\\hline 
+        Client-side Defense & None & LDP & FL-WBC & LeadFL \\ \hline 
+        Maintask Accuracy  & 76.3 &48.0 &43.3 &56.9  \\ \hline 
+        Backdoor Accuracy Avg.  & 77.5 &53.1& 56.9 &35.6 \\ \hline 
+        Backdoor Accuracy Final  &80.5 &43.8& 40.5 &25.6 \\ \hline 
     \end{tabular}
     \end{center}
 \end{table}
 
-% If you have questions about how to write mathematical formulas in LaTeX, please read a LaTeX book or the 'Not So Short Introduction to LaTeX': tobi.oetiker.ch/lshort/lshort.pdf
+Tables~\ref{tab:IIDMNIST} and~\ref{tab:IIDCIFAR} present a selection of results for the IID FashionMNIST and CIFAR10 datasets, respectively, under a 9-pixel pattern backdoor attack using the Multi-Krum server-side defense.
 
-% This is how you include a eps figure in your document. LaTeX only accepts EPS or TIFF files.
+For the FashionMNIST dataset (Table~\ref{tab:IIDMNIST}), LeadFL consistently reduces the final backdoor accuracy to nearly zero while maintaining the main task accuracy within a 10\% reduction compared to the undefended baseline. In contrast, the alternative client-side defenses, LDP and FL-WBC, achieve only moderate reductions in backdoor accuracy.
+
+For the more complex CIFAR10 dataset (Table~\ref{tab:IIDCIFAR}), the impact of LeadFL on the main task accuracy is more pronounced, reducing it to approximately 50--60\%. Nevertheless, LeadFL still substantially lowers the final backdoor accuracy to around 25\%, outperforming the other client-side defenses in terms of robustness.
+
+Across both datasets and all evaluated server-side defenses, the absence of a client-side defense results in consistently high average backdoor accuracies—exceeding 75\%—highlighting the severity of bursty poisoning attacks and the necessity of additional client-side protection mechanisms.
+
 \begin{figure}[!hbt]
-    % Center the figure.
     \begin{center}
-    % Include the eps file, scale it such that it's width equals the column width. You can also put width=8cm for example...
-    \includegraphics[width=\columnwidth]{figs/plot_tf.eps}
-    % Create a subtitle for the figure.
-    \caption{Simulation results on the AWGN channel. Average throughput $k/n$ vs $E_s/N_0$.}
-    % Define the label of the figure. It's good to use 'fig:title', so you know that the label belongs to a figure.
-    \label{fig:tf_plot}
+        \caption{9-pixel back door attack on FashionMNIST when the attack is periodic(cf. Figure 3 \cite{LeadFL})}
+    \label{fig:MNIST}
+    \includegraphics[width=0.4\textwidth]{figs/MNIST-IID.png}
     \end{center}
 \end{figure}
 
-\section{Filling this page}
-Gallia est omnis divisa in partes tres, quarum unam incolunt Belgae, aliam Aquitani, tertiam qui ipsorum lingua Celtae, nostra Galli appellantur. Hi omnes lingua, institutis, legibus inter se differunt. Gallos ab Aquitanis Garumna flumen, a Belgis Matrona et Sequana dividit. Horum omnium fortissimi sunt Belgae, propterea quod a cultu atque humanitate provinciae longissime absunt, minimeque ad eos mercatores saepe commeant atque ea quae ad effeminandos animos pertinent important, proximique sunt Germanis, qui trans Rhenum incolunt, quibuscum continenter bellum gerunt.
+\begin{figure}[!hbt]
+    \begin{center}
+        \caption{9-pixel back door attack on CIFAR10 when the attack is periodic (cf. Figure 3 \cite{LeadFL})}
+    \label{fig:CIFAR}
+    \includegraphics[width=0.4\textwidth]{figs/CIFAR10IID.png}
+    \end{center}
+\end{figure}
 
-\section{Conclusion}
-This section summarizes the paper. Now the reader knows your work, you can go into detail a little bit more about the main aspects.
+The authors further investigate the behavior of LeadFL under explicitly bursty attack patterns. In this setting, client selection is no longer random. Instead, training proceeds in cycles of ten rounds, where the first two rounds contain six malicious clients out of ten selected participants, while the remaining eight rounds involve exclusively benign clients. 
+
+The results of this experiment are illustrated in Figure~\ref{fig:MNIST} for the FashionMNIST dataset and in Figure~\ref{fig:CIFAR} for the CIFAR10 dataset. While LeadFL exhibits limited impact during the rounds dominated by malicious clients, its effect becomes apparent in the subsequent benign rounds. In particular, the recovery from each attack spike is significantly faster, and the achieved backdoor accuracy stabilizes at a lower level compared to the undefended baseline.
+
+In summary, LeadFL introduces a novel client-side defense mechanism that is particularly effective at mitigating the long-lasting effects of spikes in malicious client participation. Although the method incurs a measurable reduction in main task accuracy, it demonstrates that client-side defenses can play a crucial role in complementing existing server-side aggregation strategies. These findings motivate a closer examination of LeadFL's practical limitations and empirical behavior, which we address in the remainder of this report through an extended experimental evaluation.
+
+
+\section{Limitations and Extended Evaluation}
+Before presenting our own experimental evaluation, we first discuss several limitations and ambiguities encountered in the original LeadFL paper. These issues are relevant both for the correct interpretation of the reported results and for the reproducibility of the proposed method.
+
+First, as discussed in the previous sections, the Hessian approximation used in LeadFL is not derived rigorously and appears to contain minor mathematical inconsistencies. As a result, any practical implementation—including our own—necessarily relies on an approximation that deviates from the formulation presented in the paper. 
+
+Second, we observed discrepancies between the algorithmic description in the paper and the behavior required for a functioning implementation. 
+
+Finally, while the regularization strength $\alpha$ plays a crucial role in balancing robustness against performance degradation, the paper does not provide a principled justification or systematic tuning strategy for the selected values. Instead, $\alpha$ is varied empirically across experiments without clear guidance, limiting the interpretability and generalizability of the reported outcomes.
 
 
 % Now we need a bibliography:
 \begin{thebibliography}{1}
 
-    %Each item starts with a \bibitem{reference} command and the details thereafter.
-    \bibitem{HOP96} % Transaction paper
-    J.~Hagenauer, E.~Offer, and L.~Papke. Iterative decoding of binary block
-    and convolutional codes. {\em IEEE Trans. Inform. Theory},
-    vol.~42, no.~2, pp.~429–-445, Mar. 1996.
+    
+    \bibitem{LeadFL} 
+    C.~Zhu, S.~Roos, and L.~Chen. LeadFL: Client Self-Defense against Model Poisoning in Federated Learning. {\em Proceedings of the 40th International Conference on Machine Learning},
+    vol.~202, pp.~43158--43180, Jul. 2023.
+    
+    \bibitem{FLwbc} 
+    J.~Sun, A.~Li, L.~DiValentin, A.~Hassanzadeh, Y.~Chen and H.~Li. {FL-WBC:} Enhancing Robustness against Model Poisoning Attacks in
+                  Federated Learning from a Client Perspective {\em Advances in Neural Information Processing Systems},
+    vol.~34, pp.~12613--12624, Dec. 2021.
 
-    \bibitem{MJH06} % Conference paper
-    T.~Mayer, H.~Jenkac, and J.~Hagenauer. Turbo base-station cooperation for intercell interference cancellation. {\em IEEE Int. Conf. Commun. (ICC)}, Istanbul, Turkey, pp.~356--361, June 2006.
-
-    \bibitem{Proakis} % Book
-    J.~G.~Proakis. {\em Digital Communications}. McGraw-Hill Book Co.,
-    New York, USA, 3rd edition, 1995.
-
-    \bibitem{talk} % Web document
-    P.~N.~Edwards. How to give a talk: Changing the culture of academic public speaking.
-    http://www.si.umich.edu/~pne/acadtalk.htm.
-
-    \bibitem{5}
-    IEEE Transactions \LaTeX{} and Microsoft Word Style Files.
-    http://www.ieee.org/web/publications/authors/transjnl/index.html
+    \bibitem{OPD} 
+    Y.~LeCun, J.~Denker and S.~Solla. Optimal Brain Damage {\em Advances in Neural Information Processing Systems},
+    vol.~2, pp.~598-605, Nov. 1989.
 
 \end{thebibliography}
 
-% Your document ends here!
+
+\section{Summary: }
+
 \end{document}
