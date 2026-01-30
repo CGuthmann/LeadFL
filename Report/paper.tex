@@ -309,14 +309,72 @@ In summary, LeadFL introduces a novel client-side defense mechanism that is part
 
 
 \section{Limitations and Extended Evaluation}
-Before presenting our own experimental evaluation, we first discuss several limitations and ambiguities encountered in the original LeadFL paper. These issues are relevant both for the correct interpretation of the reported results and for the reproducibility of the proposed method.
+Before presenting our own experimental evaluation, we first discuss several limitations and ambiguities encountered in the original LeadFL paper. These issues are relevant both for the correct interpretation of the reported results and for the reproducibility of the proposed method.\\
 
-First, as discussed in the previous sections, the Hessian approximation used in LeadFL is not derived rigorously and appears to contain minor mathematical inconsistencies. As a result, any practical implementation—including our own—necessarily relies on an approximation that deviates from the formulation presented in the paper. 
+First, while the regularization strength $\alpha$ plays a crucial role in balancing robustness against performance degradation, the paper does not provide a principled justification or systematic tuning strategy for the selected values. Instead, $\alpha$ is varied empirically across experiments without clear guidance, limiting the interpretability and generalizability of the reported outcomes. 
 
-Second, we observed discrepancies between the algorithmic description in the paper and the behavior required for a functioning implementation. 
 
-Finally, while the regularization strength $\alpha$ plays a crucial role in balancing robustness against performance degradation, the paper does not provide a principled justification or systematic tuning strategy for the selected values. Instead, $\alpha$ is varied empirically across experiments without clear guidance, limiting the interpretability and generalizability of the reported outcomes.
+\begin{figure}[!hbt]
+    \begin{center}
+        \caption{9-pixel back door attack on FashionMNIST when the malicious client selection is periodic}
+    \label{fig:FashionMNISTRegBA}
+    \includegraphics[width=0.5\textwidth]{figs/MNIST-Reg-BA.png}
+    \end{center}
+\end{figure}
 
+\begin{figure}[!hbt]
+    \begin{center}
+        \caption{9-pixel back door attack on FashionMNIST when the malicious client selection is periodic}
+    \label{fig:FashionMNISTRegMA}
+    \includegraphics[width=0.5\textwidth]{figs/MNIST-Reg-MA.png}
+    \end{center}
+\end{figure}
+
+To investigate the sensitivity of LeadFL to the choice of $\alpha$, we conducted additional experiments using the authors’ original code with modified regularization strengths. Due to computational constraints, these experiments were limited to 40 global rounds. Figures~\ref{fig:FashionMNISTRegBA} and \ref{fig:FashionMNISTRegMA} show the resulting backdoor accuracy and main task accuracy, respectively. All of the evaluations in this section use the bulyan server-side defense.
+
+As shown in Figure~\ref{fig:FashionMNISTRegBA}, reducing the regularization strength to $\alpha = 0.2$ significantly weakens the defense: the decline in backdoor accuracy is slower and can not reach the same lower bound compared to the default setting of $\alpha = 0.4$. Increasing the regularization strength to $\alpha = 0.6$ yields a slight improvement on average, but the effect is not consistent across all rounds.
+Regarding the main task performance, illustrated in Figure~\ref{fig:FashionMNISTRegMA},  $\alpha = 0.2$ provides no observable benefit, while $\alpha = 0.6$ introduces occasional drops in accuracy.\\
+
+
+Finally, as discussed in the previous sections, the Hessian approximation used in LeadFL appears to contain inconsistencies. As a result, any practical implementation, including our own, necessarily relies on an approximation that deviates from the formulation presented in the paper. 
+
+\begin{figure}[!hbt]
+    \begin{center}
+        \caption{9-pixel back door attack on FashionMNIST when the malicious client selection is periodic\\
+         TODO: Replace with proper client selection}
+    \label{fig:FashionMNISTOwnMA}
+    \includegraphics[width=0.5\textwidth]{figs/MNIST-Own-MA.png}
+    \end{center}
+\end{figure}
+\begin{figure}[!hbt]
+    \begin{center}
+        \caption{9-pixel back door attack on FashionMNIST when tthe malicious client selection is periodic\\
+         TODO: Replace with proper client selection}
+    \label{fig:FashionMNISTOwnBA}
+    \includegraphics[width=0.5\textwidth]{figs/MNIST-Own-BA.png}
+    \end{center}
+\end{figure}
+
+To evaluate this, we reproduced the periodic attack setup shown in Figure~\ref{fig:MNIST} and augmented it with results obtained from our own implementation. The corresponding main task accuracy and backdoor accuracy are shown in Figures~\ref{fig:FashionMNISTOwnMA} and~\ref{fig:FashionMNISTOwnBA}, respectively. Although our implementation performs slightly worse than the original results reported by the authors, the central qualitative behavior of LeadFL remains intact. In particular, the defense induces only a moderate reduction in main task accuracy while substantially improving the recovery rate following bursty poisoning attacks. 
+
+\begin{figure}[!hbt]
+    \begin{center}
+        \caption{9-pixel back door attack on FashionMNIST when the malicious client selection is random}
+    \label{fig:FashionMNISTOwnMARandom}
+    \includegraphics[width=0.5\textwidth]{figs/MNIST-Own-Random-MA.png}
+    \end{center}
+\end{figure}
+\begin{figure}[!hbt]
+    \begin{center}
+        \caption{9-pixel back door attack on FashionMNIST when the malicious client selection is random}
+    \label{fig:FashionMNISTOwnBARandom}
+    \includegraphics[width=0.5\textwidth]{figs/MNIST-Own-Random-BA.png}
+    \end{center}
+\end{figure}
+
+We also repeated the same evaluation using random client selection instead of the periodic pattern. Interestingly, the main-task accuracy, shown in Figure~\ref{fig:FashionMNISTOwnMARandom}, remains largely consistent with the periodic case. In contrast, the backdoor accuracy exhibits more pronounced differences. While LeadFL still provides the strongest defense toward the end of training, it is occasionally outperformed by other methods—including the baseline with no client-side defense—during the initial rounds.\\
+
+In summary, our evaluation confirms that LeadFL is effective at its core: it accelerates recovery from bursty poisoning attacks and lowers the long-term backdoor accuracy, though at a cost to main-task performance. Notably, even with this trade-off, LeadFL maintains higher main-task accuracy compared to alternative client-side defenses. The periodic bursty attack pattern considered in this report represents an optimal scenario for LeadFL, whereas random client selection reduces its overall impact and introduces greater variability in backdoor mitigation. These findings suggest that while LeadFL shows promise, further evaluation is necessary before deployment in real-world federated learning systems. In particular, large-scale experiments and a more systematic investigation of the regularization parameter $\alpha$ in complex models would be essential.
 
 % Now we need a bibliography:
 \begin{thebibliography}{1}
@@ -338,6 +396,64 @@ Finally, while the regularization strength $\alpha$ plays a crucial role in bala
 \end{thebibliography}
 
 
-\section{Summary: }
+
+\newpage
+\section{Summary: Model Poisoning Attacks to Federated Learning via Multi-Round Consistency}
+
+Many existing attacks on federated learning rely on assumptions that are often unrealistic in practice, such as knowledge of other clients' updates or awareness of the aggregation rule used by the server. The paper \emph{Model Poisoning Attacks to Federated Learning via Multi-Round Consistency} \cite{PoisonedFL} proposes an attack strategy that relaxes these assumptions and operates effectively without direct knowledge of other clients or the aggregation mechanism.\\
+
+The principal idea behind the attack is to overcome the natural cancellation of updates caused by random noise added by benign clients. To achieve this, the malicious clients first select a consistent attack direction $s$. They then estimate the honest update by removing their own previous malicious contribution from the global model update.
+\begin{equation}
+    \tilde h = g^{t-1} - \frac{||g^{t-1}||}{||k^{t-1} \odot s||}(k^{t-1} \odot s)
+\end{equation}
+where $g^{t-1}$ is the last global model update and $k^{t-1} \odot s$ the last model updates on the fake clients. The factor $\frac{||g^{t-1}||}{||k^{t-1} \odot s||}$ normalizes the malicious update to have the same magnitude as the as the global one.
+This estimate is normalized to form a template of a benign update.
+\begin{equation}
+    v^t = \frac{|\tilde{h}|}{||\tilde{h}||_2}
+\end{equation}
+
+\begin{equation}
+    \lambda_t = c_t \dot ||g^{t-1}||_2
+\end{equation}
+
+A scaling factor $\lambda_t$ is determined relative to the norm of the global update, with an additional check: if the global model does not drift in the intended attack direction, it is assumed that the malicious updates are being filtered, and the scaling factor is reduced accordingly: $c_t = \begin{cases}
+    c_{t-1}\qquad \text{Alignment }> 50\%\\
+    \beta c_{t-1}\qquad \text{else }\\
+\end{cases}$ with $\beta < 1$. The final malicious update $g_i^t$ is computed as the product of the normalized template, the scaling factor, and the attack direction.
+\begin{equation}
+    g_i^t = (v^t \cdot \lambda_t) \odot s
+\end{equation}
+
+The presenting group \cite{Presenters} conducted their own evaluation of this attack. They observed that the attack requires several rounds to become effective. Nevertheless, with at least 9\% of selected clients acting maliciously, the attack successfully degrades the global model's accuracy. 
+
+The students further investigated the performance of a novel server-side defense, PRoDIGY, which was not included in the original paper. PRoDIGY proved extremely effective against this attack because the malicious updates are highly similar, making them easily detectable and filtered by the dissimilarity-based criteria. 
+
+To examine potential circumvention strategies, the group adapted the attack to counter PRoDIGY. They tested two techniques proposed in the original paper: noise adaptation, where random perturbations are added to the malicious update, and sign flipping, where each element of the malicious direction vector is flipped with a small probability. For both techniques, different scaling factors and probabilities were evaluated. The noise adaptation strategy was over all more effective than sign flipping. However, in all cases, the main task accuracy remained above 80\%.
+
+The group also noted that the original paper assumes a fixed, very small learning rate. They experimented with a learning rate scheduler, which accelerates the increase of main task accuracy and causes the learning rate to decay before the attack can fully take effect. Under this condition, the attack's effectiveness is further reduced.\\
+
+ Building on the work of the group, we believe that an additional direction for future research is to investigate the impact of client selection on attack effectiveness. In the paper, the percentage of malicious clients is fixed after selection, remaining consistent across rounds. Since one of the main observations is that the attack's effect accumulates over time, it would be valuable to study the impact of a fully random client selection process, where the fraction of malicious participants varies from round to round.
+ 
+ Further, if attackers are assumed to coordinate, an alternative strategy would be to partition the dimensions of the malicious direction vector among participants, with each attacker contributing only to their assigned subset of parameters. Against defenses such as PRoDIGY, which rely on detecting similarity across malicious updates, this approach could reduce the artificial correlation among adversarial updates and potentially increase the attack's effectiveness. 
+\begin{thebibliography}{1}
+
+    \bibitem{Presenters} 
+    Y. Xie, M. Fang and N. Z. Gong. Model Poisoning Attacks to Federated Learning via Multi-Round Consistency. {\em  Trustworthy Distributed Learning, TUM},
+    Jan. 2026.
+
+    \bibitem{PoisonedFL} 
+    L. Kunze, F. Durchdewald and N. Schenk. Presentation on: PoisonedFL via Multi-Round Consistency. {\em  Tri},
+    vpp.~5454-15463, Jun. 2025.
+
+\end{thebibliography}
 
 \end{document}
+
+@inproceedings{inproceedings,
+author = {Xie, Yueqi and Fang, Minghong and Gong, Neil},
+year = {2025},
+month = {06},
+pages = {1},
+title = {Model Poisoning Attacks to Federated Learning via Multi-Round Consistency},
+doi = {10.1109/CVPR52734.2025.01440}
+}
