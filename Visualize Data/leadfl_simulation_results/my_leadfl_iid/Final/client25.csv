@@ -1,0 +1,2 @@
+round_id,train_duration,test_duration,round_duration,num_epochs,trained_items,accuracy,train_loss,test_loss,timestamp,node_name,confusion_matrix
+1,9.80881667137146,0.04482841491699219,9.853645086288452,10,0,100.0,0.10879553779959679,1.343201263807714e-07,1769375602.7357466,client25,
