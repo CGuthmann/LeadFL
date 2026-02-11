@@ -146,7 +146,7 @@
 
 % Define document title and author
 \title{{Report on}\\ \Large LeadFL: Client Self-Defense against Model Poisoning in Federated Learning}
-\author{\textbf{Claus Guthmann}, Ramazan Tan}
+\author{\textbf{Claus Guthmann}, \textbf{Ramazan Tan}}
 
 \markboth{Trustworthy Distributed Learning }{}
 \maketitle
@@ -243,7 +243,6 @@ Combining the previous steps, the local client iteration of LeadFL can be summar
 \end{algorithm}
 
 
-
 The authors of LeadFL subsequently implement and evaluate the proposed defense under a range of experimental settings. Their primary setup consists of 100 clients, of which 25 are malicious. Training is performed over 80 global rounds, with each client executing 10 local training steps per round. In each global round, 10 clients are selected uniformly at random; this client selection is kept consistent across different experimental runs to ensure comparability (additional results for alternative client selection strategies are reported in the appendix of \cite{LeadFL}).
 
 The evaluation considers several server-side aggregation defenses, namely SparseFed, Multi-Krum, and Bulyan. For the LeadFL client-side defense, the clipping threshold is fixed at $q = 0.2$. The regularization strength $\alpha$ is varied across datasets, with $\alpha = 0.4$ for FashionMNIST and $\alpha = 0.25$ for CIFAR10. Due to the randomized client selection process, the number of malicious participants fluctuates across rounds, leading to significant variability in backdoor success rates. To account for this effect, the authors report both the final backdoor accuracy and the average backdoor accuracy over the entire training process.
@@ -336,26 +335,78 @@ As shown in Figure~\ref{fig:FashionMNISTRegBA}, reducing the regularization stre
 Regarding the main task performance, illustrated in Figure~\ref{fig:FashionMNISTRegMA},  $\alpha = 0.2$ provides no observable benefit, while $\alpha = 0.6$ introduces occasional drops in accuracy.\\
 
 
-Finally, as discussed in the previous sections, the Hessian approximation used in LeadFL appears to contain inconsistencies. As a result, any practical implementation, including our own, necessarily relies on an approximation that deviates from the formulation presented in the paper. 
+Finally, as discussed in the previous sections, the Hessian approximation used in LeadFL appears to contain fundamental inconsistencies between the theoretical proposal and the reference implementation. 
+
+The manuscript describes the defense mechanism as a direct regularization of the client-side Hessian matrix, explicitly deriving an approximation based on the finite difference of gradients. Under this formulation, the client is expected to perform a lookahead step to estimate the local curvature $\tilde{H}$ and essentially perturb the loss landscape to eliminate the null-space blind spots where the attack hides.
+
+However, our analysis of the authors' official source code reveals a different approach. As detailed in \textbf{Algorithm 2}, the reference implementation does not compute the finite difference of gradients or estimate the Hessian diagonal. Rather than computing the Hessian approximation, the code employs a heuristic that minimizes the $L_2$ norm of the divergence between the current update and a theoretical ``unit step.'' This effectively constrains the weight trajectory through geometry rather than the curvature-based regularization proposed in the text. This raises the question of whether the method's reported efficacy stems from this norm-based clipping rather than the intended Hessian regularization.
+
+\begin{algorithm}
+\caption{\emph{LeadFL} Local Client Iteration (Original Implementation)}
+\begin{enumerate}[]
+    \item[1:] {Compute standard gradients:} \\
+    $g_{t,i}^c \leftarrow \nabla L(W_{t,i}^c)$
+    
+    \item[2:] {Perform standard SGD step:} \\
+    $\tilde W_{t,i+1}^c \leftarrow W_{t,i}^c - \eta_t g_{t,i}^c$
+    
+    \item[3:] {Compute regularization loss ($L_2$ Norm):} \\
+    $L_{reg} \leftarrow \alpha \cdot \left\| \tilde W_{t,i+1}^c - W_{t,i}^c - g_{old}^c - \eta_t \cdot \mathbf{1} \right\|_2$
+    
+    \item[4:] {Compute gradients of the regularization loss:} \\
+    $g_{reg}^c \leftarrow \nabla L_{reg}(\tilde W_{t,i+1}^c)$
+    
+    \item[5:] {Clip the regularization gradients:} \\
+    $\tilde g_{reg}^c \leftarrow \operatorname{clip\_grad\_value}(g_{reg}^c, q)$
+    
+    \item[6:] {Secondary update step:} \\
+    $W_{t,i+1}^c \leftarrow \tilde W_{t,i+1}^c - \eta_t \tilde g_{reg}^c$
+\end{enumerate}
+\end{algorithm}
+
+To address this ambiguity and rigorously evaluate the paper's theoretical claims, we developed a corrected implementation, detailed in \textbf{Algorithm 3}. Unlike the original code, our version strictly adheres to the mathematical derivation provided in the manuscript, explicitly computing the gradient difference $(\tilde{g} - g) / \eta$ to approximate the Hessian diagonal. By testing both versions, we aim to determine if the defense's robustness relies on the intended Hessian regularization or merely on the norm constraint found in the code.
+
+\begin{algorithm}
+\caption{\emph{LeadFL} Local Client Iteration (Our Implementation)}
+\begin{enumerate}[]
+    \item[1:] {Compute gradients at current parameters:} \\
+    $g_{t,i}^c \leftarrow \nabla L(W_{t,i}^c)$
+    
+    \item[2:] {Perform temporary SGD step (lookahead):} \\
+    $\tilde W_{t,i+1}^c \leftarrow W_{t,i}^c - \eta_t g_{t,i}^c$
+    
+    \item[3:] {Compute gradients at the lookahead position:} \\
+    $\tilde g_{t,i+1}^c \leftarrow \nabla L(\tilde W_{t,i+1}^c)$
+    
+    \item[4:] {Estimate the Hessian diagonal via Finite Difference:} \\
+    $\tilde H_{t,i}^c \leftarrow (\tilde g_{t,i+1}^c - g_{t,i}^c) / \eta_t$
+    
+    \item[5:] {Compute and clip the regularization term:} \\
+    $R_{raw} \leftarrow 1 - \eta_t \tilde H_{t,i}^c$ \\
+    $R_{t,i}^c \leftarrow \operatorname{clamp}(R_{raw}, -q, q)$
+    
+    \item[6:] {Final update with regularization:} \\
+    $W_{t,i+1}^c \leftarrow \tilde W_{t,i+1}^c - \eta_t \alpha R_{t,i}^c$
+\end{enumerate}
+\end{algorithm}
 
 \begin{figure}[!hbt]
     \begin{center}
-        \caption{9-pixel back door attack on FashionMNIST when the malicious client selection is periodic\\
-         TODO: Replace with proper client selection}
+        \caption{9-pixel back door attack on FashionMNIST when the malicious client selection is periodic}
     \label{fig:FashionMNISTOwnMA}
     \includegraphics[width=0.5\textwidth]{figs/MNIST-Own-MA.png}
     \end{center}
 \end{figure}
 \begin{figure}[!hbt]
     \begin{center}
-        \caption{9-pixel back door attack on FashionMNIST when tthe malicious client selection is periodic\\
-         TODO: Replace with proper client selection}
+        \caption{9-pixel back door attack on FashionMNIST when tthe malicious client selection is periodic}
     \label{fig:FashionMNISTOwnBA}
     \includegraphics[width=0.5\textwidth]{figs/MNIST-Own-BA.png}
     \end{center}
 \end{figure}
 
-To evaluate this, we reproduced the periodic attack setup shown in Figure~\ref{fig:MNIST} and augmented it with results obtained from our own implementation. The corresponding main task accuracy and backdoor accuracy are shown in Figures~\ref{fig:FashionMNISTOwnMA} and~\ref{fig:FashionMNISTOwnBA}, respectively. Although our implementation performs slightly worse than the original results reported by the authors, the central qualitative behavior of LeadFL remains intact. In particular, the defense induces only a moderate reduction in main task accuracy while substantially improving the recovery rate following bursty poisoning attacks. 
+To evaluate this, we reproduced the periodic attack setup shown in Figure~\ref{fig:MNIST} and augmented it with results obtained from our own implementation. The corresponding main task accuracy and backdoor accuracy are shown in Figures~\ref{fig:FashionMNISTOwnMA} and~\ref{fig:FashionMNISTOwnBA}, respectively. We observe that the original implementation acts as a strict geometric constraint, whereas our version relies on a noisy finite-difference approximation. This distinction likely contributes to the performance variance, suggesting that the strict norm constraint in the reference code may offer additional stability distinct from the proposed Hessian regularization. Although our implementation performs slightly worse than the original results reported by the authors, the central qualitative behavior of LeadFL remains intact. In particular, the defense induces only a moderate reduction in main task accuracy while substantially improving the recovery rate following bursty poisoning attacks.
+
 
 \begin{figure}[!hbt]
     \begin{center}
@@ -374,7 +425,7 @@ To evaluate this, we reproduced the periodic attack setup shown in Figure~\ref{f
 
 We also repeated the same evaluation using random client selection instead of the periodic pattern. Interestingly, the main-task accuracy, shown in Figure~\ref{fig:FashionMNISTOwnMARandom}, remains largely consistent with the periodic case. In contrast, the backdoor accuracy exhibits more pronounced differences. While LeadFL still provides the strongest defense toward the end of training, it is occasionally outperformed by other methods—including the baseline with no client-side defense—during the initial rounds.\\
 
-In summary, our evaluation confirms that LeadFL is effective at its core: it accelerates recovery from bursty poisoning attacks and lowers the long-term backdoor accuracy, though at a cost to main-task performance. Notably, even with this trade-off, LeadFL maintains higher main-task accuracy compared to alternative client-side defenses. The periodic bursty attack pattern considered in this report represents an optimal scenario for LeadFL, whereas random client selection reduces its overall impact and introduces greater variability in backdoor mitigation. These findings suggest that while LeadFL shows promise, further evaluation is necessary before deployment in real-world federated learning systems. In particular, large-scale experiments and a more systematic investigation of the regularization parameter $\alpha$ in complex models would be essential.
+In summary, our evaluation confirms that LeadFL is effective at its core: it accelerates recovery from bursty poisoning attacks and lowers the long-term backdoor accuracy, though at a cost to main-task performance. Crucially, the observation that our corrected Hessian-based implementation exhibits comparable qualitative behavior suggests that the defense’s efficacy is primarily driven by the theoretical regularization, though the implicit norm constraint in the original reference code appears to contribute additional stability. Notably, even with this trade-off, LeadFL maintains higher main-task accuracy compared to alternative client-side defenses. The periodic bursty attack pattern considered in this report represents an optimal scenario for LeadFL, whereas random client selection reduces its overall impact and introduces greater variability in backdoor mitigation. These findings suggest that while LeadFL shows promise, further evaluation is necessary before deployment in real-world federated learning systems. In particular, large-scale experiments and a more systematic investigation of the regularization parameter $\alpha$ in complex models would be essential.
 
 % Now we need a bibliography:
 \begin{thebibliography}{1}
@@ -397,7 +448,11 @@ In summary, our evaluation confirms that LeadFL is effective at its core: it acc
 
 
 
+\onecolumn
 \newpage
+\twocolumn
+
+
 \section{Summary: Model Poisoning Attacks to Federated Learning via Multi-Round Consistency}
 
 Many existing attacks on federated learning rely on assumptions that are often unrealistic in practice, such as knowledge of other clients' updates or awareness of the aggregation rule used by the server. The paper \emph{Model Poisoning Attacks to Federated Learning via Multi-Round Consistency} \cite{PoisonedFL} proposes an attack strategy that relaxes these assumptions and operates effectively without direct knowledge of other clients or the aggregation mechanism.\\
@@ -446,6 +501,46 @@ The group also noted that the original paper assumes a fixed, very small learnin
     vpp.~5454-15463, Jun. 2025.
 
 \end{thebibliography}
+
+
+\newpage
+\section{Summary: Towards the Robustness of Differentially Private Federated Learning}
+
+A common intuition in Federated Learning (FL) is that Differential Privacy (DP) noise naturally enhances robustness by "drowning out" malicious inputs. The paper \emph{Towards the Robustness of Differentially Private Federated Learning} \cite{OriginalPaper_1} challenges this belief, demonstrating that DP-FL is not inherently robust. In fact, standard outlier detection mechanisms (like Krum or Median) fail in DP-FL because the heavy DP noise increases the variance of benign updates, masking the malicious ones.\\
+
+To exploit this, the authors propose \textbf{Attack-DPFL}. The core insight is that while benign updates are perturbed by noise with a large norm ($||n||_2 \approx \sigma\sqrt{d}$), malicious clients can upload unperturbed, "clean" poisoned gradients that are amplified to match this large norm.
+\begin{equation}
+    A_u = A \cdot G_u, \quad \text{where } A = \frac{||S_{benign}||}{||G_u||}
+\end{equation}
+By scaling the poisoned gradient $G_u$ by factor $A$, the attack hides the malicious update within the magnitude of the noise, allowing it to dominate the aggregation without being detected as an outlier.
+
+To counter this, the paper introduces \textbf{Robust-DPFL}. The defense relies on the observation that DP noise vectors are independent and zero-mean, meaning their element-wise sum tends toward zero. In contrast, the amplified poisoned updates introduce a systematic bias. The defense calculates a \emph{Detection Score} $Z(S)$ for each update:
+\begin{equation}
+    Z(S) = \left| \frac{1}{d} \sum_{i=1}^{d} S[i] \right|
+\end{equation}
+Updates with high detection scores are identified as malicious and filtered out via K-means clustering.\\
+
+The presenting group \cite{Presenters_1} reproduced the experiments on MNIST, FEMNIST, and CIFAR-10. Their evaluation confirmed that Attack-DPFL achieves an Attack Success Rate (ASR) of nearly 100\% against standard defenses like Krum and Median, which struggle to distinguish noise from poison. 
+
+They further analyzed the "Three-way Trade-off" between Privacy, Accuracy, and Robustness using the Robust-DPFL defense. They observed that while Robust-DPFL successfully lowers ASR, increasing the privacy level (lowering the privacy budget $\epsilon$) introduces a side effect: the intense noise distorts gradient distributions so heavily that the score-based detection becomes slightly less precise. Despite this, they concluded that Robust-DPFL achieves the optimal balance, maintaining high main task accuracy where other defenses fail.
+
+The presenters have outlined critical areas for future investigation, specifically emphasizing \textbf{Adaptive Privacy} strategies. While the current approach uses static noise levels, a dynamic mechanism that adjusts in real-time to the estimated threat severity could better preserve model accuracy. Additionally, the presenters highlight the risk of "Smarter Attackers" capable of circumventing the defense by optimizing their updates to yield a low Detection Score $Z(S)$. Countering such adversaries will necessitate the development of more sophisticated defense metrics that go beyond simple element-wise averaging.
+
+
+
+
+\begin{thebibliography}{1}
+
+    \bibitem{Presenters_1} 
+    K. Ise, W. Tang and R. Yagi. Group Project: Towards the Robustness of Differentially Private Federated Learning. {\em Trustworthy Distributed Learning, TUM},
+    Jan. 2026.
+
+    \bibitem{OriginalPaper_1} 
+    T. Qi, H. Wang and Y. Huang. Towards the Robustness of Differentially Private Federated Learning. {\em AAAI Conference on Artificial Intelligence (AAAI-24)},
+    Vol. 38, No. 19, pp. 19911-19919, Mar. 2024.
+\end{thebibliography}
+
+
 
 \end{document}
 
